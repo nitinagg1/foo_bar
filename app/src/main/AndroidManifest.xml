@@ -16,17 +16,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".PlayVideoSelect"
-            android:label="Video Player"
-         />
-        <activity android:name=".ServeCoordinates"
-            android:label="Serve Coordinates"/>
-        <activity android:name=".BounceCoordinates"
-            android:label="bounce coordinates"/>
-        <activity android:name=".DisplaySpeed"
-            android:label="displaying speed"/>
-        <activity android:name=".DisplayScreenShot"
-            android:label="displaying screenshot"/>
         <activity android:name=".PlayVideoSelect2"
             android:label="Video Player2"
             />
