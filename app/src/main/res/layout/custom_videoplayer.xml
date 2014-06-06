@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <VideoView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/videoView"
+        android:layout_gravity="center_horizontal|bottom" />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right|bottom"
+        android:layout_marginRight="100dp"
+        android:id="@+id/forward"
+        android:onClick="forward"
+        android:background="@android:color/transparent"
+        android:src="@drawable/ic_action_fast_forward"/>
+
+
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="150dp"
+        android:layout_gravity="right|bottom"
+        android:id="@+id/play"
+        android:onClick="play"
+        android:background="@android:color/transparent"
+        android:src="@drawable/ic_action_play"/>
+
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="200dp"
+        android:layout_gravity="right|bottom"
+        android:id="@+id/pause"
+        android:onClick="pause"
+        android:background="@android:color/transparent"
+        android:src="@drawable/ic_action_pause"/>
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="250dp"
+        android:layout_gravity="right|bottom"
+        android:id="@+id/rewind"
+        android:onClick="rewind"
+        android:background="@android:color/transparent"
+        android:src="@drawable/ic_action_rewind"/>
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="8dp"
+        android:layout_gravity="right|end|bottom"
+        android:id="@+id/slowmotion"
+        android:onClick="playslowmotion"
+        android:background="@android:color/transparent"
+        android:src="@drawable/imageslow"/>
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="20dp"
+        android:id="@+id/savetime"
+        android:onClick="RacquetContactTime"
+        android:background="@android:color/transparent"
+        android:src="@drawable/ic_action_save"/>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/ImageViewCapture"
+        android:src="@drawable/ic_action_camera"
+        android:background="@android:color/transparent"
+       />
+
+    <ImageView
+        android:layout_width="200dp"
+        android:layout_height="250dp"
+        android:adjustViewBounds="true"
+        android:scaleType="fitXY"
+        android:layout_gravity="center"
+        android:id="@+id/ImageViewPreview"
+
+         />
+    <SeekBar
+        android:id="@+id/seekBar10"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="450dp"
+        android:layout_marginLeft="50dp"
+        android:layout_marginRight="50dp"
+        android:background="@android:color/transparent"
+         />
+    <TextView
+        android:id="@+id/textView10"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="460dp"
+        android:text="start"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+    <TextView
+        android:id="@+id/textView20"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="325dp"
+        android:layout_marginTop="460dp"
+        android:text="final"
+        android:textAppearance="?android:attr/textAppearanceSmall" />
+
+</FrameLayout>
