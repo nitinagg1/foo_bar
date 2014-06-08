@@ -176,7 +176,7 @@ public class ServePosition extends Activity {
                         float xdp=convertPixelsToDp(x,getApplicationContext());
                         float ydp=convertPixelsToDp(y,getApplicationContext());
                         servePositionX=xdp+20;
-                        servePositionY=y_org-50;
+                        servePositionY=y_orgDp-50;
                         float screenwidth=dm.widthPixels;
                         float screenheight=dm.heightPixels;
                         screenWidth= convertPixelsToDp(screenwidth,getApplicationContext());
@@ -190,26 +190,7 @@ public class ServePosition extends Activity {
             }
         });
     }
-    /*
-    private void placeImage(float X, float Y) {
-        int touchX = (int) X;
-        int touchY = (int) Y;
 
-
-
-        //placing at center of touch
-        int viewWidth = shoe.getWidth();
-        int viewHeight = shoe.getHeight();
-        viewWidth = viewWidth / 2;
-        viewHeight = viewHeight / 2;
-
-        shoe.layout(touchX -viewWidth , touchY-viewHeight , touchX + viewWidth, touchY+ viewHeight);
-
-        // Toast.makeText(this,"x-" +touchView2.getX()+"y-"+touchView2.getY(),Toast.LENGTH_SHORT).show();
-
-
-    }
-*/
     public void NoteServingPosition(View view)
     {
         PlayVideoSelect2 p1= new PlayVideoSelect2();
@@ -238,41 +219,4 @@ public class ServePosition extends Activity {
 
 
 }
-/*
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        super.onTouchEvent(event);
-        switch(event.getAction())
-        {
-            case MotionEvent.ACTION_DOWN :
-            {
-                FrameLayout.LayoutParams mParams = (FrameLayout.LayoutParams) imageView.getLayoutParams();
-                parms = (LayoutParams) myView.getLayoutParams();
-                par = (LinearLayout.LayoutParams) getWindow().findViewById(Window.ID_ANDROID_CONTENT).getLayoutParams();
-                dx = event.getRawX() - parms.leftMargin;
-                dy = event.getRawY() - parms.topMargin;
-            }
-            break;
-            case MotionEvent.ACTION_MOVE :
-            {
-                x = event.getRawX();
-                y = event.getRawY();
-                parms.leftMargin = (int) (x-dx);
-                parms.topMargin = (int) (y - dy);
-                myView.setLayoutParams(parms);
-            }
-            break;
-            case MotionEvent.ACTION_UP :
-            {
-
-            }
-            break;
-        }
-
-
-        return true;
-
-    }
-
-*/
 

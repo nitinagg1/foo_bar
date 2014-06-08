@@ -2,6 +2,7 @@ package com.example.ServeSpeed;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -33,6 +34,8 @@ public class ServePosition2 extends Activity {
 
     public static float scaleInDP;
     public static float scaleInPixels;
+    public static float ballX;
+    public static float ballY;
     DisplayMetrics dm;
 
     Animation toZoomIn;
@@ -84,6 +87,13 @@ public class ServePosition2 extends Activity {
                             float boxy1P=convertDpToPixel(boxy1,getApplicationContext());
                             float boxx2P=convertDpToPixel(boxx2,getApplicationContext());
                             float boxy2P=convertDpToPixel(boxy2,getApplicationContext());
+                           /* x_cord=x_cord+ 100;
+                            y_cord=y_cord -100;
+                            boxx1P=boxx1P+100;
+                            boxy2P=boxy2P-100;
+                            boxx2P=boxx2P+100;
+                            boxy1P=boxy1P-100;
+                            */
                             if(x_cord>boxx1P)
                             {
                                 x_cord=(int)boxx1P;
@@ -245,7 +255,10 @@ public class ServePosition2 extends Activity {
                         //ball.getLocationOnScreen(test1);
                         float ballleft=ball.getLeft();
                         float balltop= ball.getTop();
-                        Toast.makeText(getApplicationContext(), "x-" + convertPixelsToDp(ballleft,getApplicationContext()) + "y-" + convertPixelsToDp(balltop,getApplicationContext()), Toast.LENGTH_SHORT).show();
+                        ballX=convertPixelsToDp(ballleft,getApplicationContext())+(float)12.5;
+                        ballY=convertPixelsToDp(balltop,getApplicationContext())+(float)12.5;
+
+                        Toast.makeText(getApplicationContext(), "x-" +ballX  + "y-" + ballY, Toast.LENGTH_SHORT).show();
                     default:
                         break;
                 }
@@ -253,7 +266,12 @@ public class ServePosition2 extends Activity {
             }
         });
     }
+    public void CalculateSpeed(View view)
+    {
+        Intent i= new Intent(this,CalculateSpeedClass.class);
+        startActivity(i);
 
+    }
     /*
     @Override
     public boolean onTouchEvent(MotionEvent event) {

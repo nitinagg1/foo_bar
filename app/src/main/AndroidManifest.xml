@@ -25,6 +25,10 @@
         <activity android:name=".ServePosition2"
             android:label="serveposition2"
             />
+        <activity android:name=".CalculateSpeedClass"
+            android:label="calculation"
+            />
+
     </application>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.CAMERA"/>

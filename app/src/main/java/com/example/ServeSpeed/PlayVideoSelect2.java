@@ -80,21 +80,10 @@ public class PlayVideoSelect2 extends Activity {
         //songName.setText("first video");
         mediaPlayer = MediaPlayer.create(this, selectVideo);
 
-        retriever.setDataSource(this,selectVideo);
+
        mm=(ImageView)findViewById(R.id.forward);
 
-        imageViewPreview = (ImageView) findViewById(R.id.ImageViewPreview);
-        imageViewCapture = (ImageView) findViewById(R.id.ImageViewCapture);
-        imageViewCapture.setOnClickListener(new View.OnClickListener() {
 
-            @Override
-            public void onClick(View v) {
-                long time=mediaPlayer.getCurrentPosition();
-                bitmap = retriever.getFrameAtTime(-1);
-                imageViewPreview.setImageBitmap(bitmap);
-                createImageFromBitmap(bitmap);
-            }
-        });
 
     }
 
