@@ -9,9 +9,6 @@
         android:id="@+id/Choose_Calculate"
         android:title="Choose_Calculate"
         />
-
-
-
     <item android:id="@+id/Exit"
         android:title="@string/Exit"
         android:orderInCategory="100"

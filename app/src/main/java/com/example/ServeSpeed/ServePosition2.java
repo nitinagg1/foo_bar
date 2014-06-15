@@ -266,55 +266,14 @@ public class ServePosition2 extends Activity {
             }
         });
     }
+
     public void CalculateSpeed(View view)
     {
         Intent i= new Intent(this,CalculateSpeedClass.class);
         startActivity(i);
 
     }
-    /*
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        super.onTouchEvent(event);
-        int eventAction = event.getAction();
-        switch(eventAction) {
-            case MotionEvent.ACTION_MOVE:
-                float TouchXX = event.getX();
-                float TouchYY = event.getY();
-                //Toast.makeText(this,"x-"+TouchX+"y-"+TouchY,Toast.LENGTH_SHORT).show();
-                placeImage(TouchXX, TouchYY);
-                break;
-            case MotionEvent.ACTION_UP:
-                int[] test1= new int[2];
-                touchView2.getLocationOnScreen(test1);
-                Toast.makeText(this, "x-" + convertPixelsToDp((float)test1[0],getApplicationContext()) + "y-" + convertPixelsToDp((float)test1[1],getApplicationContext()), Toast.LENGTH_SHORT).show();
-                placeImage(TouchX, TouchY);
-                break;
-        }
-        return true;
-    }
 
-    private void placeImage(float X, float Y) {
-        int touchX = (int) X;
-        int touchY = (int) Y;
-
-
-
-        //placing at center of touch
-        int viewWidth = touchView2.getWidth();
-        int viewHeight = touchView2.getHeight();
-        viewWidth = viewWidth / 2;
-        viewHeight = viewHeight / 2;
-        touchView2.setX(touchX);
-        touchView2.setY(touchY);
-        //touchView2.layout(touchX -viewWidth , touchY-viewHeight , touchX + viewWidth, touchY+ viewHeight);
-        touchView2.setVisibility(0);
-        // Toast.makeText(this,"x-" +touchView2.getX()+"y-"+touchView2.getY(),Toast.LENGTH_SHORT).show();
-
-
-    }
-
-    */
     public static float convertPixelsToDp(float px, Context context){
         Resources resources = context.getResources();
         DisplayMetrics metrics = resources.getDisplayMetrics();
@@ -331,41 +290,4 @@ public class ServePosition2 extends Activity {
 
 
 }
-/*
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        super.onTouchEvent(event);
-        switch(event.getAction())
-        {
-            case MotionEvent.ACTION_DOWN :
-            {
-                FrameLayout.LayoutParams mParams = (FrameLayout.LayoutParams) imageView.getLayoutParams();
-                parms = (LayoutParams) myView.getLayoutParams();
-                par = (LinearLayout.LayoutParams) getWindow().findViewById(Window.ID_ANDROID_CONTENT).getLayoutParams();
-                dx = event.getRawX() - parms.leftMargin;
-                dy = event.getRawY() - parms.topMargin;
-            }
-            break;
-            case MotionEvent.ACTION_MOVE :
-            {
-                x = event.getRawX();
-                y = event.getRawY();
-                parms.leftMargin = (int) (x-dx);
-                parms.topMargin = (int) (y - dy);
-                myView.setLayoutParams(parms);
-            }
-            break;
-            case MotionEvent.ACTION_UP :
-            {
-
-            }
-            break;
-        }
-
-
-        return true;
-
-    }
-
-*/
 

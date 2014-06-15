@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SurfaceHolder;
@@ -31,13 +32,9 @@ import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 import java.lang.Object;
 
-/**
- * Created by lenovo on 4/7/14.
- */
 public class PlayVideoSelect2 extends Activity {
-    public RelativeLayout R1;
+
     public static int pausetime=0;
-    public int frwdtimetocompare=0;
     public int stopslowmo=0;
     public static BitmapDrawable bitmapDrawable;
     public TextView startTimeField,endTimeField;
@@ -52,20 +49,19 @@ public class PlayVideoSelect2 extends Activity {
     private int forwardTime = 250;
     private int backwardTime = 250;
     private SeekBar seekbar;
-    private ImageButton playButton,pauseButton;
+    private ImageButton playButton,pauseButton,slowMotion;
     private SurfaceView view;
     private SurfaceHolder holder;
-    public static int oneTimeOnly = 0;
     public static int RacquetTouchOnce=0;
-    ImageView imageViewCapture, imageViewPreview,mm;
     public Bitmap bitmap;
-    public View nitin;
     MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+    Timer timer;
+    String TAG = "servespeed";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.custom_videoplayer);
-        nitin = getWindow().getDecorView().findViewById(android.R.id.content);
         view = (VideoView) findViewById (R.id.videoView);
         holder = view.getHolder();
         holder.setKeepScreenOn (true);
@@ -75,18 +71,17 @@ public class PlayVideoSelect2 extends Activity {
         seekbar = (SeekBar)findViewById(R.id.seekBar10);
         playButton = (ImageButton)findViewById(R.id.play);
         pauseButton = (ImageButton)findViewById(R.id.pause);
+        slowMotion = (ImageButton)findViewById(R.id.slowmotion);
         MainActivity m1= new MainActivity();
         Uri selectVideo=m1.ReturnVideoUri();
-        //songName.setText("first video");
+        pauseButton.setEnabled(false);
+        playButton.setEnabled(false);
+        slowMotion.setEnabled(false);
+        timer = new Timer();
         mediaPlayer = MediaPlayer.create(this, selectVideo);
-
-
-       mm=(ImageView)findViewById(R.id.forward);
-
-
-
+        if (mediaPlayer != null)
+            playButton.setEnabled(true);
     }
-
 
     public void RacquetContactTime(View view) throws InterruptedException {
         stopslowmo=1;
@@ -95,29 +90,19 @@ public class PlayVideoSelect2 extends Activity {
             racquetContactTime = mediaPlayer.getCurrentPosition();
             Toast.makeText(this, "The time is " + racquetContactTime, Toast.LENGTH_SHORT).show();
             mediaPlayer.pause();
-            //TakeScreenShot();
-
-
-
-
-
+            // ToDo  -- TakeScreenShot();
             CallServeCoordinates();
-
-
             RacquetTouchOnce=1;
             stopslowmo=0;
-
         }
         else
         {
-            ballBounceTime=mediaPlayer.getCurrentPosition();
+            ballBounceTime = mediaPlayer.getCurrentPosition();
             Toast.makeText(this,"The time is "+ballBounceTime,Toast.LENGTH_SHORT).show();
             mediaPlayer.pause();
             CallBounceCoordinates();
         }
-        //canvas.drawBitmap(b, 0, 0, null);
     }
-
 
     public Bitmap getBitmapOfView(View v)
     {
@@ -127,15 +112,6 @@ public class PlayVideoSelect2 extends Activity {
         return bmp;
     }
 
-
-    /*
-     * @author : Mayur Sharma
-     * This method is used to create an image file using the bitmap
-     * This method accepts an object of Bitmap class
-     * Currently we are passing the bitmap of the root view of current activity
-     * The image file will be created by the name capturedscreen.jpg
-     * @param : Bitmap bmp
-     */
     public void createImageFromBitmap(Bitmap bmp)
     {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
@@ -154,92 +130,106 @@ public class PlayVideoSelect2 extends Activity {
             e.printStackTrace();
         }
     }
+
     public void CallBounceCoordinates()
     {
         Intent intent= new Intent(this,ServePosition2.class);
         startActivity(intent);
     }
+
     public void CallServeCoordinates()
     {
         Intent intent= new Intent(this,ServePosition.class);
         startActivity(intent);
         play(view);
-
     }
+
     public void play(View view)
     {
-        mediaPlayer.setDisplay(holder);
-        mediaPlayer.start();
-
-        finalTime = mediaPlayer.getDuration();
-        startTime = mediaPlayer.getCurrentPosition();
-        if(oneTimeOnly == 0){
+        //timer.cancel();
+        myHandler.removeCallbacks(startSlow);
+        myHandler.removeCallbacks(stopSlow);
+        synchronized (this) {
+            mediaPlayer.setDisplay(holder);
+            mediaPlayer.start();
+            finalTime = mediaPlayer.getDuration();
+            startTime = mediaPlayer.getCurrentPosition();
             seekbar.setMax((int) finalTime);
+            endTimeField.setText(String.format("%d:%d",
+                            TimeUnit.MILLISECONDS.toMinutes((long) finalTime),
+                            TimeUnit.MILLISECONDS.toSeconds((long) finalTime) -
+                                    TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.
+                                            toMinutes((long) finalTime))
+                    )
+            );
+            startTimeField.setText(String.format("%d:%d",
+                            TimeUnit.MILLISECONDS.toMinutes((long) startTime),
+                            TimeUnit.MILLISECONDS.toSeconds((long) startTime) -
+                                    TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.
+                                            toMinutes((long) startTime))
+                    )
+            );
+            seekbar.setProgress((int) startTime);
+            seekbar.setClickable(true);
+            pauseButton.setEnabled(true);
+            slowMotion.setEnabled(true);
+            playButton.setEnabled(false);
+            myHandler.postDelayed(UpdateWithSeekBarOrUpdateSeekBar, 100);
         }
-
-        endTimeField.setText(String.format("%d:%d",
-                TimeUnit.MILLISECONDS.toMinutes((long) finalTime),
-                TimeUnit.MILLISECONDS.toSeconds((long) finalTime) -
-                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.
-                                toMinutes((long) finalTime)))
-        );
-        startTimeField.setText(String.format("%d:%d",
-                TimeUnit.MILLISECONDS.toMinutes((long) startTime),
-                TimeUnit.MILLISECONDS.toSeconds((long) startTime) -
-                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.
-                                toMinutes((long) startTime)))
-        );
-        seekbar.setProgress((int)startTime);
-        //mediaPlayer.setDisplay (holder);
-        //mediaPlayer.setLooping (true);
-        seekbar.setClickable(true);
-
-        pauseButton.setEnabled(true);
-/*
-
-*/
-
-
-
-        myHandler.postDelayed(UpdateSongTime,100);
-        //pauseButton.setEnabled(true);
-        //playButton.setEnabled(false);
     }
+
+    /*
     public void playslowmotion(View view)
     {
-        Toast.makeText(this, "SlowMotion",
-                Toast.LENGTH_SHORT).show();
-        mediaPlayer.pause();
-
-        Timer t1= new Timer();
-
-
-        TimerTask slowtimer= new TimerTask()
-        {
-
-            @Override
-            public void run() {
-                if(stopslowmo==1)
-                {
-                    this.cancel();
-                    stopslowmo=0;
-                }
-                else
-                {
-                    //int aa=mediaPlayer.getCurrentPosition();
+        timer = new Timer();
+        playButton.setEnabled(true);
+        synchronized (this) {
+            Toast.makeText(this, "SlowMotion", Toast.LENGTH_SHORT).show();
+            timer.schedule(new TimerTask() {
+                public void run() {
                     mediaPlayer.start();
-                    mediaPlayer.pause();
                 }
-            }
-        };
-
-        t1.scheduleAtFixedRate(slowtimer, 0, 10);
-
-
-
+            }, 0, 200);
+            timer.schedule(new TimerTask() {
+                public void run() {
+                    if (mediaPlayer.isPlaying())
+                        mediaPlayer.pause();
+                }
+            }, 100, 200);
+        }
+    }
+    */
+    public void playslowmotion(View view)
+    {
+        playButton.setEnabled(true);
+        synchronized (this) {
+            myHandler.postDelayed(stopSlow, 0);
+            myHandler.postDelayed(startSlow, 0);
+        }
     }
 
-    private Runnable UpdateSongTime = new Runnable() {
+    private Runnable startSlow = new Runnable() {
+        @Override
+        public void run() {
+            Log.d(TAG, "start");
+            mediaPlayer.start();
+            myHandler.postDelayed(this, 10);
+        }
+    };
+
+    private Runnable stopSlow = new Runnable() {
+        @Override
+        public void run() {
+            if (mediaPlayer.isPlaying())
+            {
+                Log.d(TAG, "stop");
+                mediaPlayer.pause();
+            }
+            myHandler.postDelayed(this, 10);
+        }
+    };
+
+    private Runnable UpdateWithSeekBarOrUpdateSeekBar = new Runnable() {
         public void run() {
             startTime = mediaPlayer.getCurrentPosition();
             startTimeField.setText(String.format("%d:%d",
@@ -249,21 +239,13 @@ public class PlayVideoSelect2 extends Activity {
                                     toMinutes((long) startTime)))
             );
             seekbar.setProgress((int)startTime);
-
             seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-
-                    //startTime=i;
-                    //mediaPlayer.seekTo((int) startTime);
-                    ///myHandler.postDelayed(this,100);
                 }
-
                 @Override
                 public void onStartTrackingTouch(SeekBar seekBar) {
-
                 }
-
                 @Override
                 public void onStopTrackingTouch(SeekBar seekBar) {
                     int value = seekBar.getProgress();
@@ -275,86 +257,47 @@ public class PlayVideoSelect2 extends Activity {
         }
     };
 
-
-
     public void pause(View view){
-        Toast.makeText(getApplicationContext(), "Pausing",
-                Toast.LENGTH_SHORT).show();
+        //timer.cancel();
+        myHandler.removeCallbacks(startSlow);
+        myHandler.removeCallbacks(stopSlow);
+        Toast.makeText(getApplicationContext(), "Pausing", Toast.LENGTH_SHORT).show();
+        if (!mediaPlayer.isPlaying())
+            return;
         stopslowmo=1;
         mediaPlayer.pause();
         pausetime=mediaPlayer.getCurrentPosition();
-        pauseButton.setEnabled(true);
+        pauseButton.setEnabled(false);
         playButton.setEnabled(true);
     }
 
-    public void forward(View view){
-        Timer t1= new Timer();
-        mediaPlayer.pause();
-        frwdtimetocompare=mediaPlayer.getCurrentPosition();
-        TimerTask slowtimer= new TimerTask()
-        {
-            int oncerun=0;
-            @Override
-            public void run() {
-
-                int presentposition=mediaPlayer.getCurrentPosition();
-                if(frwdtimetocompare<presentposition)
-                {
-                    oncerun++;
-                }
-                if(oncerun>=2)
-                {
-                    this.cancel();
-                    oncerun=0;
-                }
-                else
-                {
-                    mediaPlayer.start();
-                    mediaPlayer.pause();
-                }
-
-            }
-        };
-
-        t1.scheduleAtFixedRate(slowtimer, 0, 10);
-
-    }
-    public void rewind(View view){
-        Timer t1= new Timer();
-        mediaPlayer.pause();
-        frwdtimetocompare=mediaPlayer.getCurrentPosition();
-        frwdtimetocompare=frwdtimetocompare-70;
-        mediaPlayer.seekTo(frwdtimetocompare);
-        //mediaPlayer.start();
-        //mediaPlayer.pause();
-
-        TimerTask slowtimer= new TimerTask()
-        {
-            int oncerun=0;
-            @Override
-            public void run() {
-
-                int presentposition=mediaPlayer.getCurrentPosition();
-                if(frwdtimetocompare<presentposition)
-                {
-                    oncerun++;
-                }
-                if(oncerun>=1)
-                {
-                    this.cancel();
-                    oncerun=0;
-                }
-                else
-                {
-                    mediaPlayer.start();
-                    mediaPlayer.pause();
-                }
-
-            }
-        };
-
-        t1.scheduleAtFixedRate(slowtimer, 0, 10);
-
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.d(TAG,"onstart");
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d(TAG,"onresume");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.d(TAG,"onpause");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.d(TAG, "onStop");
+        myHandler.removeCallbacks(UpdateWithSeekBarOrUpdateSeekBar);
+        myHandler.removeCallbacks(stopSlow);
+        myHandler.removeCallbacks(startSlow);
+        //timer.cancel();
+        //timer.purge();
+        mediaPlayer.release();
+    }
 }

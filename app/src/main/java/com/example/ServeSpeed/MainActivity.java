@@ -24,18 +24,15 @@ public class MainActivity extends Activity {
 
     final int RESULT_LOAD_VIDEO=1001;
     public static Uri selectedVideo;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
@@ -44,9 +41,6 @@ public class MainActivity extends Activity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         switch (id)
         {
@@ -56,10 +50,7 @@ public class MainActivity extends Activity {
             case R.id.Choose_Calculate:
                 onChooseCalculate(item);
                 break;
-
         }
-
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -68,14 +59,14 @@ public class MainActivity extends Activity {
         final Intent galleryIntent = new Intent(Intent.ACTION_GET_CONTENT);
         galleryIntent.setType("video/*");
         startActivityForResult(galleryIntent, RESULT_LOAD_VIDEO);
-
-
     }
+
     private void CallPlayVideoAct()
     {
         Intent intent= new Intent(this,PlayVideoSelect2.class);
         startActivity(intent);
     }
+
     protected void onActivityResult(int requestCode, int resultCode, Intent videoReturnedIntent) {
         super.onActivityResult(requestCode, resultCode, videoReturnedIntent);
 
@@ -86,41 +77,29 @@ public class MainActivity extends Activity {
                 {
                     selectedVideo = videoReturnedIntent.getData();
                 }
-
             case 1000:
                 if (resultCode == RESULT_OK)
                 {
-
                 }
         }
         CallPlayVideoAct();
     }
+
     public Uri ReturnVideoUri()
     {
-        // Toast.makeText(getApplicationContext(),selectedVideo,Toast.LENGTH_SHORT).show();
-
         return selectedVideo;
-
     }
 
     public void onChooseCalculate(MenuItem item)
     {
         selectedVideo= GenerateTimeStampUri();
-
-
         if(selectedVideo!=null)
         {
             Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
             intent.putExtra(MediaStore.EXTRA_OUTPUT,selectedVideo);
-
             startActivityForResult(intent,1000);
-            // sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED,Uri.parse("file://"+Environment.getExternalStorageDirectory())));
         }
     }
-
-
-
-
 
     File getDirectory()
     {
@@ -139,9 +118,9 @@ public class MainActivity extends Activity {
                 }
             }
         }
-
         return outPutDir;
     }
+
     Uri GenerateTimeStampUri()
     {
         Uri TimeStampuri=null;
@@ -150,17 +129,10 @@ public class MainActivity extends Activity {
         if(outputDir!=null)
         {
             String Timestamp= new SimpleDateFormat("yyyymmdd_hhmmss").format(new Date());
-
-
             String ImageName= "VID_"+Timestamp+".mp4";
-
             File photofile= new File(outputDir,ImageName);
-
             TimeStampuri=Uri.fromFile(photofile);
         }
-
         return TimeStampuri;
     }
-
-
 }
