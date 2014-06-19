@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,15 +28,17 @@ import android.widget.VideoView;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 import java.lang.Object;
 
-public class PlayVideoSelect2 extends Activity {
+public class PlayVideoSelect2 extends Activity implements SurfaceHolder.Callback{
 
     public static int pausetime=0;
-    public int stopslowmo=0;
     public static BitmapDrawable bitmapDrawable;
     public TextView startTimeField,endTimeField;
     private MediaPlayer mediaPlayer;
@@ -50,22 +53,24 @@ public class PlayVideoSelect2 extends Activity {
     private int backwardTime = 250;
     private SeekBar seekbar;
     private ImageButton playButton,pauseButton,slowMotion;
-    private SurfaceView view;
+    //private SurfaceView view;
+    private MyVideoView view;
     private SurfaceHolder holder;
     public static int RacquetTouchOnce=0;
     public Bitmap bitmap;
     MediaMetadataRetriever retriever = new MediaMetadataRetriever();
     Timer timer;
     String TAG = "servespeed";
-
+    private int mFrameRate = 33;
+    Uri selectVideo;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.custom_videoplayer);
-        view = (VideoView) findViewById (R.id.videoView);
+        view = (MyVideoView) findViewById (R.id.videoView);
         holder = view.getHolder();
-        holder.setKeepScreenOn (true);
-        //songName = (TextView)findViewById(R.id.textView4);
+        //holder.setKeepScreenOn (true);
+        holder.addCallback(this);
         startTimeField =(TextView)findViewById(R.id.textView10);
         endTimeField =(TextView)findViewById(R.id.textView20);
         seekbar = (SeekBar)findViewById(R.id.seekBar10);
@@ -73,61 +78,32 @@ public class PlayVideoSelect2 extends Activity {
         pauseButton = (ImageButton)findViewById(R.id.pause);
         slowMotion = (ImageButton)findViewById(R.id.slowmotion);
         MainActivity m1= new MainActivity();
-        Uri selectVideo=m1.ReturnVideoUri();
+        selectVideo=m1.ReturnVideoUri();
         pauseButton.setEnabled(false);
         playButton.setEnabled(false);
         slowMotion.setEnabled(false);
         timer = new Timer();
-        mediaPlayer = MediaPlayer.create(this, selectVideo);
-        if (mediaPlayer != null)
-            playButton.setEnabled(true);
+
     }
 
     public void RacquetContactTime(View view) throws InterruptedException {
-        stopslowmo=1;
         if(RacquetTouchOnce==0)
         {
             racquetContactTime = mediaPlayer.getCurrentPosition();
             Toast.makeText(this, "The time is " + racquetContactTime, Toast.LENGTH_SHORT).show();
-            mediaPlayer.pause();
+            if (mediaPlayer.isPlaying())
+                mediaPlayer.pause();
             // ToDo  -- TakeScreenShot();
             CallServeCoordinates();
             RacquetTouchOnce=1;
-            stopslowmo=0;
         }
         else
         {
             ballBounceTime = mediaPlayer.getCurrentPosition();
             Toast.makeText(this,"The time is "+ballBounceTime,Toast.LENGTH_SHORT).show();
-            mediaPlayer.pause();
+            if (mediaPlayer.isPlaying())
+                mediaPlayer.pause();
             CallBounceCoordinates();
-        }
-    }
-
-    public Bitmap getBitmapOfView(View v)
-    {
-        View rootview = v.getRootView();
-        rootview.setDrawingCacheEnabled(true);
-        Bitmap bmp = rootview.getDrawingCache();
-        return bmp;
-    }
-
-    public void createImageFromBitmap(Bitmap bmp)
-    {
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        bmp.compress(Bitmap.CompressFormat.JPEG, 40, bytes);
-        File file = new File( Environment.getExternalStorageDirectory() +
-                "/capturedscreen.jpg");
-        try
-        {
-            file.createNewFile();
-            FileOutputStream ostream = new FileOutputStream(file);
-            ostream.write(bytes.toByteArray());
-            ostream.close();
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
         }
     }
 
@@ -150,7 +126,7 @@ public class PlayVideoSelect2 extends Activity {
         myHandler.removeCallbacks(startSlow);
         myHandler.removeCallbacks(stopSlow);
         synchronized (this) {
-            mediaPlayer.setDisplay(holder);
+            //mediaPlayer.setDisplay(holder);
             mediaPlayer.start();
             finalTime = mediaPlayer.getDuration();
             startTime = mediaPlayer.getCurrentPosition();
@@ -202,30 +178,27 @@ public class PlayVideoSelect2 extends Activity {
     public void playslowmotion(View view)
     {
         playButton.setEnabled(true);
-        synchronized (this) {
-            myHandler.postDelayed(stopSlow, 0);
             myHandler.postDelayed(startSlow, 0);
-        }
+            //myHandler.postDelayed(stopSlow, 10);
     }
 
     private Runnable startSlow = new Runnable() {
         @Override
         public void run() {
-            Log.d(TAG, "start");
             mediaPlayer.start();
-            myHandler.postDelayed(this, 10);
+            SystemClock.sleep(10);
+            mediaPlayer.pause();
+            boolean boo = myHandler.postDelayed(this, 100);
+            Log.d(TAG, "start and bool :" + boo);
         }
     };
 
     private Runnable stopSlow = new Runnable() {
         @Override
         public void run() {
-            if (mediaPlayer.isPlaying())
-            {
-                Log.d(TAG, "stop");
                 mediaPlayer.pause();
-            }
-            myHandler.postDelayed(this, 10);
+            boolean boo = myHandler.postDelayed(this, 200);
+            Log.d(TAG, "stop and bool :" + boo);
         }
     };
 
@@ -264,7 +237,6 @@ public class PlayVideoSelect2 extends Activity {
         Toast.makeText(getApplicationContext(), "Pausing", Toast.LENGTH_SHORT).show();
         if (!mediaPlayer.isPlaying())
             return;
-        stopslowmo=1;
         mediaPlayer.pause();
         pausetime=mediaPlayer.getCurrentPosition();
         pauseButton.setEnabled(false);
@@ -280,6 +252,7 @@ public class PlayVideoSelect2 extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
+        //calculateFrameRate();
         Log.d(TAG,"onresume");
     }
 
@@ -296,8 +269,46 @@ public class PlayVideoSelect2 extends Activity {
         myHandler.removeCallbacks(UpdateWithSeekBarOrUpdateSeekBar);
         myHandler.removeCallbacks(stopSlow);
         myHandler.removeCallbacks(startSlow);
-        //timer.cancel();
-        //timer.purge();
         mediaPlayer.release();
     }
+
+    @Override
+    public void surfaceCreated(SurfaceHolder holder) {
+        Log.d(TAG,"surface created");
+        mediaPlayer = new MediaPlayer();
+        try{
+            mediaPlayer.setDisplay(holder);
+        }
+        catch(Exception e)
+        {
+            Log.d(TAG,"exception e :" + e);
+        }
+        try {
+            mediaPlayer.setDataSource(getApplicationContext(), selectVideo);
+            mediaPlayer.prepare();
+        }catch (Exception e)
+        {
+            Log.d(TAG,"exception e :" + e);
+        }
+        //mediaPlayer = MediaPlayer.create(this, selectVideo);
+        if (mediaPlayer != null)
+            playButton.setEnabled(true);
+
+        mediaPlayer.setScreenOnWhilePlaying(true);
+    }
+
+    @Override
+    public void surfaceDestroyed(SurfaceHolder holder) {
+        Log.d(TAG, "surfacedestroyed");
+        myHandler.removeCallbacks(UpdateWithSeekBarOrUpdateSeekBar);
+        myHandler.removeCallbacks(stopSlow);
+        myHandler.removeCallbacks(startSlow);
+        mediaPlayer.release();
+    }
+
+    @Override
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+       Log.d(TAG,"surface changed");
+    }
 }
+
