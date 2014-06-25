@@ -1,19 +1,13 @@
 package com.example.ServeSpeed;
 
 import android.app.Activity;
-import android.app.ActionBar;
-import android.app.Fragment;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.os.Build;
 import android.widget.Toast;
 
 import java.io.File;
@@ -33,7 +27,6 @@ public class MainActivity extends Activity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
@@ -44,26 +37,37 @@ public class MainActivity extends Activity {
         int id = item.getItemId();
         switch (id)
         {
-            case R.id.Capture_Calculate:
-                onCaptureCalculate(item);
-                break;
             case R.id.Choose_Calculate:
                 onChooseCalculate(item);
+                break;
+            case R.id.Capture_Calculate:
+                onCaptureCalculate(item);
                 break;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    public void onCaptureCalculate(MenuItem item)
+    public void onChooseCalculate(MenuItem item)
     {
         final Intent galleryIntent = new Intent(Intent.ACTION_GET_CONTENT);
         galleryIntent.setType("video/*");
         startActivityForResult(galleryIntent, RESULT_LOAD_VIDEO);
     }
 
+    public void onCaptureCalculate(MenuItem item)
+    {
+        selectedVideo = GenerateTimeStampUri();
+        if( selectedVideo!=null )
+        {
+            Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT,selectedVideo);
+            startActivityForResult(intent,1000);
+        }
+    }
+
     private void CallPlayVideoAct()
     {
-        Intent intent= new Intent(this,PlayVideoSelect2.class);
+        Intent intent= new Intent(this,PlayVideo.class);
         startActivity(intent);
     }
 
@@ -90,16 +94,7 @@ public class MainActivity extends Activity {
         return selectedVideo;
     }
 
-    public void onChooseCalculate(MenuItem item)
-    {
-        selectedVideo= GenerateTimeStampUri();
-        if(selectedVideo!=null)
-        {
-            Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
-            intent.putExtra(MediaStore.EXTRA_OUTPUT,selectedVideo);
-            startActivityForResult(intent,1000);
-        }
-    }
+
 
     File getDirectory()
     {

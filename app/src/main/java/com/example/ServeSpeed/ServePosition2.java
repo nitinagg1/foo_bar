@@ -50,13 +50,6 @@ public class ServePosition2 extends Activity {
         getWindowManager().getDefaultDisplay().getMetrics(dm);
         x_org=dm.widthPixels;
         y_org=dm.heightPixels;
-        /*
-        FrameLayout.LayoutParams mParams1 = (FrameLayout.LayoutParams) ball.getLayoutParams();
-        mParams1.leftMargin=(int) x_org - (int)x_org/2 - (int)convertDpToPixel(25,getApplicationContext())/2;
-        mParams1.topMargin=(int)y_org- (int)y_org/2 - (int)convertDpToPixel(100,getApplicationContext())/2;
-        */
-        //windowwidth = getWindowManager().getDefaultDisplay().getWidth();
-        //windowheight = getWindowManager().getDefaultDisplay().getHeight();
 
         ball.setOnTouchListener(new View.OnTouchListener() {
 
@@ -159,9 +152,7 @@ public class ServePosition2 extends Activity {
                             ball.setLayoutParams(mParams);
                             break;
                         }
-
                         else if(ServePosition.servePositionX<180 && ServePosition.servePositionY>50)
-
                         {
                             FrameLayout.LayoutParams mParams = (FrameLayout.LayoutParams) ball.getLayoutParams();
                             int x_cord = (int) event.getRawX();

@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
@@ -55,80 +54,63 @@ public class ServePosition extends Activity {
         getWindowManager().getDefaultDisplay().getMetrics(dm);
         screenwidth1=dm.widthPixels;
         screenheight1=dm.heightPixels;
-
         toZoomIn = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.zoomin);
-        //tennisCourt.setAnimation(toZoomIn);
         shoe.setOnTouchListener(new View.OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                int eid = event.getAction();
+                switch (eid) {
+                    case MotionEvent.ACTION_MOVE:
+                        FrameLayout.LayoutParams mParams = (FrameLayout.LayoutParams) shoe.getLayoutParams();
 
-        public boolean onTouch(View v, MotionEvent event) {
-            // TODO Auto-generated method stub
-            int eid = event.getAction();
-            switch (eid) {
-                case MotionEvent.ACTION_MOVE:
-                    FrameLayout.LayoutParams mParams = (FrameLayout.LayoutParams) shoe.getLayoutParams();
+                        int x_cord = (int) event.getRawX();
+                        //int y_cord = (int) event.getRawX();
+                        x_org=dm.widthPixels;
+                        y_org=dm.heightPixels;
+                        x_orgDP=convertPixelsToDp(x_org,getApplicationContext());
+                        y_orgDp=convertPixelsToDp(y_org,getApplicationContext());
+                        y_courtDp=y_orgDp-100;
+                        float length=(float)23.78;
+                        float breadth=(float)10.97;
+                        x_courtDP=y_courtDp*breadth/length;
+                        x_court=convertDpToPixel(x_courtDP,getApplicationContext());
+                        y_court=convertDpToPixel(y_courtDp,getApplicationContext());
+                        scaleInDP=y_courtDp/length;
+                        int convert40=(int)convertDpToPixel(40,getApplicationContext());
+                        if(x_cord>x_court + convert40)
+                        {
+                            x_cord=(int)x_court+ convert40;
+                        }
+                        if(x_cord<(x_org-x_court)/2 +convert40)
+                        {
+                            x_cord=(int)(x_org-x_court)/2 + convert40;
+                        }
 
-                    int x_cord = (int) event.getRawX();
-                    //int y_cord = (int) event.getRawX();
-                    x_org=dm.widthPixels;
-                    y_org=dm.heightPixels;
-                    x_orgDP=convertPixelsToDp(x_org,getApplicationContext());
-                    y_orgDp=convertPixelsToDp(y_org,getApplicationContext());
-                    y_courtDp=y_orgDp-100;
-                    float length=(float)23.78;
-                    float breadth=(float)10.97;
-                    x_courtDP=y_courtDp*breadth/length;
-                    x_court=convertDpToPixel(x_courtDP,getApplicationContext());
-                    y_court=convertDpToPixel(y_courtDp,getApplicationContext());
-                    scaleInDP=y_courtDp/length;
-                    int convert40=(int)convertDpToPixel(40,getApplicationContext());
-                    if(x_cord>x_court + convert40)
-                    {
-                        x_cord=(int)x_court+ convert40;
-                    }
-                    if(x_cord<(x_org-x_court)/2 +convert40)
-                    {
-                        x_cord=(int)(x_org-x_court)/2 + convert40;
-                    }
-
-
-                    //if (y_cord > windowheight) {
-                    //   y_cord = windowheight;
-                    //}
-
-
-                    mParams.leftMargin = x_cord - (int)screenwidth1/2;
-
-                    //mParams.topMargin = y_cord ;
-
-                    shoe.setLayoutParams(mParams);
-                    break;
-                case MotionEvent.ACTION_UP:
-                    int test1[] = new int[2];
-                    float x = shoe.getLeft();
-                    float y = shoe.getTop();
-                    float xdp=convertPixelsToDp(x,getApplicationContext());
-                    float ydp=convertPixelsToDp(y,getApplicationContext());
-                    servePositionX=xdp+20;
-                    servePositionY=50;
-                    float screenwidth=dm.widthPixels;
-                    float screenheight=dm.heightPixels;
-                    screenWidth= convertPixelsToDp(screenwidth,getApplicationContext());
-                    screenHeight=convertPixelsToDp(screenheight,getApplicationContext());
-
-                    Toast.makeText(getApplicationContext(), "x-" + servePositionX + "y-" + servePositionY, Toast.LENGTH_SHORT).show();
-                default:
-                    break;
+                        mParams.leftMargin = x_cord - (int)screenwidth1/2;
+                        shoe.setLayoutParams(mParams);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        int test1[] = new int[2];
+                        float x = shoe.getLeft();
+                        float y = shoe.getTop();
+                        float xdp=convertPixelsToDp(x,getApplicationContext());
+                        float ydp=convertPixelsToDp(y,getApplicationContext());
+                        servePositionX=xdp+20;
+                        servePositionY=50;
+                        float screenwidth=dm.widthPixels;
+                        float screenheight=dm.heightPixels;
+                        screenWidth= convertPixelsToDp(screenwidth,getApplicationContext());
+                        screenHeight=convertPixelsToDp(screenheight,getApplicationContext());
+                        Toast.makeText(getApplicationContext(), "x-" + servePositionX + "y-" + servePositionY, Toast.LENGTH_SHORT).show();
+                    default:
+                        break;
+                }
+                return true;
             }
-            return true;
-        }
-    });
-
-
+        });
 
         shoe2.setOnTouchListener(new View.OnTouchListener() {
 
             public boolean onTouch(View v, MotionEvent event) {
-                // TODO Auto-generated method stub
                 int eid = event.getAction();
                 switch (eid) {
                     case MotionEvent.ACTION_MOVE:
@@ -157,15 +139,7 @@ public class ServePosition extends Activity {
                             x_cord=(int)(x_org-x_court)/2 + convert40;
                         }
 
-
-                        //if (y_cord > windowheight) {
-                        //   y_cord = windowheight;
-                        //}
-
-
                         mParams.leftMargin = x_cord - (int)screenwidth1/2;
-
-                        //mParams.topMargin = y_cord ;
 
                         shoe2.setLayoutParams(mParams);
                         break;
@@ -193,14 +167,8 @@ public class ServePosition extends Activity {
 
     public void NoteServingPosition(View view)
     {
-        PlayVideoSelect2 p1= new PlayVideoSelect2();
-        Intent intent= new Intent(this,PlayVideoSelect2.class);
+        Intent intent= new Intent(this,PlayVideo.class);
         startActivity(intent);
-    }
-    public void ZoomInShoe(View view)
-    {
-        shoe.setVisibility(View.VISIBLE);
-        tennisCourt.startAnimation(toZoomIn);
     }
 
     public static float convertPixelsToDp(float px, Context context){
@@ -216,7 +184,6 @@ public class ServePosition extends Activity {
         float px = dp * (metrics.densityDpi / 160f);
         return px;
     }
-
 
 }
 

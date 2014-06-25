@@ -3,11 +3,11 @@
     tools:context="com.example.ServeSpeed.MainActivity" >
 
     <item
-        android:id="@+id/Capture_Calculate"
-        android:title="Capture_Calculate"/>
-    <item
         android:id="@+id/Choose_Calculate"
-        android:title="Choose_Calculate"
+        android:title="Choose Video"/>
+    <item
+        android:id="@+id/Capture_Calculate"
+        android:title="Capture Video"
         />
     <item android:id="@+id/Exit"
         android:title="@string/Exit"

@@ -35,14 +35,6 @@
         android:src="@drawable/speedicon2"
          />
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_action_forward"
-        android:id="@+id/zoominButton"
-        android:layout_gravity="center"
-        android:onClick="ZoomInShoe"/>
-
     <Button
         android:id="@+id/add_new"
         android:text="correct"
