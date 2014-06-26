@@ -1,15 +1,27 @@
 package com.example.ServeSpeed;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaMetadataRetriever;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.SystemClock;
+import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URI;
 
 /**
  * Created by lenovo on 6/8/14.
@@ -18,16 +30,42 @@ public class CalculateSpeedClass extends Activity{
 
     TextView tv;
     ImageView image;
+    Uri selectVideo;
+    Button shareButton;
+    Button cont;
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.speeed_display);
         tv = (TextView)findViewById(R.id.textView);
         image = (ImageView)findViewById(R.id.snapshot);
+        shareButton = (Button)findViewById(R.id.share);
+        cont = (Button)findViewById(R.id.cont);
         int speeddisplay=CalcSpeed();
         tv.setText("Speed " + speeddisplay + "Km/hr");
-        tv.setVisibility(View.VISIBLE);
-        Bitmap bm = BitmapFactory.decodeFile(getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES) + File.separator + "test.jpg");
+        // Screen Shot
+        MainActivity m1= new MainActivity();
+        selectVideo=m1.ReturnVideoUri();
+        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+        try
+        {
+            retriever.setDataSource(getApplicationContext(),selectVideo);
+            Bitmap bitmap = retriever.getFrameAtTime(PlayVideo.racquetContactTime*1000,MediaMetadataRetriever.OPTION_CLOSEST);
+
+            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+
+            File f = new File(getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES) + File.separator + "snapshot.jpg");
+            f.createNewFile();
+            FileOutputStream fo = new FileOutputStream(f);
+            fo.write(bytes.toByteArray());
+            fo.close();
+        }
+        catch (Exception e)
+        {
+            Log.d("servespeed", "exception :" + e);
+        }
+        Bitmap bm = BitmapFactory.decodeFile(getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES) + File.separator + "snapshot.jpg");
         image.setImageBitmap(bm);
     }
 
@@ -69,5 +107,48 @@ public class CalculateSpeedClass extends Activity{
         speed= speed* (float)1.2;
         int speedint=(int)speed;
         return speedint;
+    }
+
+    public void share(View view)
+    {
+        SystemClock.sleep(50);
+        String mPath = getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES) + File.separator + "share.png";
+        Bitmap bitmap;
+        View v1 = image.getRootView();
+        v1.setDrawingCacheEnabled(true);
+        bitmap = Bitmap.createBitmap(v1.getDrawingCache());
+        v1.setDrawingCacheEnabled(false);
+        OutputStream fout = null;
+        File imageFile = new File(mPath);
+        try {
+            fout = new FileOutputStream(imageFile);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fout);
+            fout.flush();
+            fout.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        sendShareIntent(mPath);
+    }
+
+    private void sendShareIntent(String path)
+    {
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.setType("image/jpeg");
+        shareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(path)));
+        startActivity(shareIntent);
+    }
+
+    public void continueGame(View view)
+    {
+        Intent intent = new Intent(this,MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
     }
 }

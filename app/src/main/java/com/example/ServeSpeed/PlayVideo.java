@@ -52,6 +52,7 @@ public class PlayVideo extends Activity implements SurfaceHolder.Callback,MediaP
     private SeekBar seekbar;
     private ImageButton playButton,pauseButton,slowMotion,fwdButton;
     private MyVideoView mView;
+    private ImageView play_pause;
     private SurfaceHolder holder;
     public static int RacquetTouchOnce=0;
     public Bitmap bitmap;
@@ -74,6 +75,7 @@ public class PlayVideo extends Activity implements SurfaceHolder.Callback,MediaP
         pauseButton = (ImageButton)findViewById(R.id.pause);
         slowMotion = (ImageButton)findViewById(R.id.slowmotion);
         fwdButton = (ImageButton)findViewById(R.id.forward);
+        play_pause = (ImageView)findViewById(R.id.play_pause);
         MainActivity m1= new MainActivity();
         selectVideo=m1.ReturnVideoUri();
         pauseButton.setEnabled(false);
@@ -101,26 +103,7 @@ public class PlayVideo extends Activity implements SurfaceHolder.Callback,MediaP
             Toast.makeText(this, "The time is " + racquetContactTime, Toast.LENGTH_SHORT).show();
             if (mediaPlayer.isPlaying())
                 mediaPlayer.pause();
-            // Screen Shot
-            MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-            try
-            {
-                retriever.setDataSource(getApplicationContext(),selectVideo);
-                Bitmap bitmap = retriever.getFrameAtTime(racquetContactTime*1000,MediaMetadataRetriever.OPTION_CLOSEST);
 
-                ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-
-                File f = new File(getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES) + File.separator + "test.jpg");
-                f.createNewFile();
-                FileOutputStream fo = new FileOutputStream(f);
-                fo.write(bytes.toByteArray());
-                fo.close();
-            }
-            catch (Exception e)
-            {
-                Log.d("servespeed" , "exception :" + e);
-            }
             CallServeCoordinates();
             RacquetTouchOnce=1;
         }
@@ -148,6 +131,7 @@ public class PlayVideo extends Activity implements SurfaceHolder.Callback,MediaP
 
     public void play(View view)
     {
+        play_pause.setVisibility(View.GONE);
         myHandler.removeCallbacks(startSlow);
         synchronized (this) {
             if (mediaPlayer.isPlaying())
@@ -163,6 +147,7 @@ public class PlayVideo extends Activity implements SurfaceHolder.Callback,MediaP
 
     public void forward(View view)
     {
+        play_pause.setVisibility(View.GONE);
         myHandler.removeCallbacks(startSlow);
         if(mediaPlayer.isPlaying())
             mediaPlayer.pause();
@@ -194,6 +179,7 @@ public class PlayVideo extends Activity implements SurfaceHolder.Callback,MediaP
     private Runnable startSlow = new Runnable() {
         @Override
         public void run() {
+            play_pause.setVisibility(View.GONE);
             mediaPlayer.start();
             SystemClock.sleep(10);
             mediaPlayer.pause();
@@ -240,9 +226,8 @@ public class PlayVideo extends Activity implements SurfaceHolder.Callback,MediaP
     };
 
     public void pause(View view){
-        //timer.cancel();
+        play_pause.setVisibility(View.VISIBLE);
         myHandler.removeCallbacks(startSlow);
-        Toast.makeText(getApplicationContext(), "Pausing", Toast.LENGTH_SHORT).show();
         if (!mediaPlayer.isPlaying())
             return;
         mediaPlayer.pause();
@@ -290,16 +275,19 @@ public class PlayVideo extends Activity implements SurfaceHolder.Callback,MediaP
         }
         if (mediaPlayer != null)
         {
+
             mView.setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View v, MotionEvent event) {
                     myHandler.removeCallbacks(startSlow);
                     if(mediaPlayer.isPlaying()) {
+                        play_pause.setVisibility(View.VISIBLE);
                         mediaPlayer.pause();
-                        Toast.makeText(getApplicationContext(), "Pausing", Toast.LENGTH_SHORT).show();
                     }
-                    else
+                    else {
+                        play_pause.setVisibility(View.GONE);
                         mediaPlayer.start();
+                    }
                     return false;
                 }
             });

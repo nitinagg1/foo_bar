@@ -6,12 +6,16 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.PopupWindow;
 import android.widget.Toast;
 
 /**
@@ -262,7 +266,7 @@ public class ServePosition2 extends Activity {
     {
         Intent i= new Intent(this,CalculateSpeedClass.class);
         startActivity(i);
-
+        finish();
     }
 
     public static float convertPixelsToDp(float px, Context context){
@@ -279,6 +283,14 @@ public class ServePosition2 extends Activity {
         return px;
     }
 
+    private PopupWindow dimBackground() {
+        LayoutInflater inflater = (LayoutInflater) getApplicationContext()
+                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View layout = inflater.inflate(R.layout.fade_popup, null);
+        PopupWindow fadePopup = new PopupWindow(layout, ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT);
+        fadePopup.showAtLocation(findViewById(android.R.id.content), Gravity.NO_GRAVITY, 0, 0);
+        return fadePopup;
+    }
 
 }
 
