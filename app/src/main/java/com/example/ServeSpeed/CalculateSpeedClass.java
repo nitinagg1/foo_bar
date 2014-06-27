@@ -145,6 +145,7 @@ public class CalculateSpeedClass extends Activity{
 
     public void continueGame(View view)
     {
+        PlayVideo.RacquetTouchOnce=0;
         Intent intent = new Intent(this,MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
